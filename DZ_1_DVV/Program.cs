@@ -11,7 +11,7 @@ namespace DZ_1_DVV
         static float function(float x)
         {
             //return (float)(0.1 * x * x + 2);
-            return (float)( 0.5 * Math.Cos(x*10) + 1);
+            return (float)( 0.02 * x * x * x * Math.Cos(x * x / 10) + 1 / Math.Exp(x * x) + 1);
             //return (x + (float)1.1);
         }
         static void Main(string[] args)
@@ -24,8 +24,8 @@ namespace DZ_1_DVV
             график функции в соответствии с результатами п.2. (если точка функции попадает на линию системы координат, преимущество остается за системой координат)
             */
 
-            const int heightConsole = 50;
-            const int discrete = 20;
+            const int heightConsole = 60;
+            const int discrete = 5;
             const int step = 5;
 
             Console.BackgroundColor = ConsoleColor.White;
@@ -37,39 +37,49 @@ namespace DZ_1_DVV
 
             while (true)
             {
-                Console.SetCursorPosition(35, heightConsole);
+                Console.SetCursorPosition(25, heightConsole);
                 Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Gray; 
                 Console.Write("y = ");
                 float y = Convert.ToSingle(Console.ReadLine()); // float.Parse("41.00027357629127") //Convert.ToSingle(Console.ReadLine()) видає помилку при некоретних записах
                 int Y = heightConsole / 2 - (int)Math.Round(y * discrete);
                 // Треба зробити перевірку, але мені вже влом
-
-                Console.SetCursorPosition(0, heightConsole);
                 Console.BackgroundColor = ConsoleColor.Red;
                 draw_the_line(Y, heightConsole, discrete, step, true);
 
-                Console.SetCursorPosition(35, heightConsole);       
+                Console.SetCursorPosition(55, heightConsole);
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Gray;
-                Console.Write("x =                                                  "); // мені впадлу!
-                Console.SetCursorPosition(35, heightConsole);
                 Console.Write("x = ");
                 float x = Convert.ToSingle(Console.ReadLine()); // float.Parse("41.00027357629127")
                 int X = (int)((float)Console.BufferWidth / 2 + Math.Round(x * discrete));
                 // Треба зробити перевірку, але мені вже влом
-
                 Console.BackgroundColor = ConsoleColor.Red;
                 draw_the_column(X, heightConsole, discrete, step, true);
 
-                Console.SetCursorPosition(35, heightConsole);
+                Console.SetCursorPosition(33, heightConsole);
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine("ENTER to Clear");
                 Console.ReadLine();
+                Clear(heightConsole, 30);
+
                 Console.BackgroundColor = ConsoleColor.White;
                 draw_the_column(X, heightConsole, discrete, step, false );
                 draw_the_line(Y, heightConsole, discrete, step, false);
             }
             
+        }
+
+        static void Clear(int heightConsole, int row)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            for (int i = 0; i < row; i++)
+            {
+                Console.SetCursorPosition(0, heightConsole + i);
+                Console.Write("                                                                                "); // 80 chars
+            }
+            Console.SetCursorPosition(0, heightConsole);
         }
 
         public struct environment
@@ -117,17 +127,16 @@ namespace DZ_1_DVV
 
                 if (sum >= -lineWidth && sum <= lineWidth)
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                     if (flag)
                     {
-                        Console.SetCursorPosition(35, heightConsole + ++root);
+                        Console.SetCursorPosition(55, heightConsole + ++root);
                         Console.WriteLine("y = {0}", ((float)i - (float)heightConsole / 2) / discrete); //(int)((float)Console.BufferWidth / 2 + Math.Round(x * discrete));
                         //((float)j - Console.BufferWidth / 2) / discrete
                         // Наче так , якщо не так то мені ...
                         Console.SetCursorPosition(j, i);
                     }
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write("*");  // Точно до товщини лінії
-
                 }
                 else if ((roots.left || roots.right || roots.top || roots.down) // Перевірка на зміна знаку
                     && (Math.Abs(sum) < Math.Abs(roots.futureSumCol) && Math.Abs(roots.oldSumCol) > Math.Abs(sum) /* && Можливе ігнорування елементів */ || // Інгнорування елементів немає
@@ -138,15 +147,14 @@ namespace DZ_1_DVV
                     //    case 0x0000: // Якщо зробити структуру з одних булевих зміних!
                     //}
 
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (flag)
                     {
-                        Console.SetCursorPosition(35, heightConsole + ++root);
+                        Console.SetCursorPosition(55, heightConsole + ++root);
                         Console.WriteLine("y = {0}", ((float)i - (float)heightConsole / 2) / discrete); //(int)((float)Console.BufferWidth / 2 + Math.Round(x * discrete));
                         // Наче так , якщо не так то мені ...
                         Console.SetCursorPosition(j, i);
                     }
-
-                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (roots.left && !roots.right && !roots.top && !roots.down) // По одному і по три
                         Console.Write("[");
                     else if (!roots.left && roots.right && roots.top && roots.down)
@@ -235,7 +243,6 @@ namespace DZ_1_DVV
         {
             int root = 0;
             Console.SetCursorPosition(0, i);
-            const int step = 5;
             float lineWidth = ((float)1 / (10 * discrete));
             float x =  (0 - (float)Console.BufferWidth / 2) / discrete;
             float y = -(i - (float)heightConsole / 2) / discrete; 
@@ -264,15 +271,15 @@ namespace DZ_1_DVV
 
                 if (sum >= -lineWidth && sum <= lineWidth)
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                     if (flag)
                     {
-                        Console.SetCursorPosition(35, heightConsole + ++root);
+                        Console.SetCursorPosition(25, heightConsole + ++root);
                         Console.WriteLine("root: {0}", ((float)j - Console.BufferWidth / 2) / discrete); //heightConsole / 2 - (int)Math.Round(y * discrete);
                         //((float)i - (float)heightConsole / 2) / discrete
                         // Наче так , якщо не так то мені ...
                         Console.SetCursorPosition(j, i);
                     }
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write("*");  // Точно до товщини лінії
                 }
                 else if ((roots.left || roots.right || roots.top || roots.down) // Перевірка на зміна знаку
@@ -283,14 +290,14 @@ namespace DZ_1_DVV
                     //{              // В С++ проконало б!
                     //    case 0x0000: // Якщо зробити структуру з одних булевих зміних!
                     //}
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (flag)
                     {
-                        Console.SetCursorPosition(35, heightConsole + ++root);
+                        Console.SetCursorPosition(25, heightConsole + ++root);
                         Console.WriteLine("root: {0}", ((float)j - Console.BufferWidth / 2) / discrete); //heightConsole / 2 - (int)Math.Round(y * discrete);
                         // Наче так , якщо не так то мені ...
                         Console.SetCursorPosition(j, i);
                     }
-                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (roots.left && !roots.right && !roots.top && !roots.down) // По одному і по три
                         Console.Write("[");
                     else if (!roots.left && roots.right && roots.top && roots.down)
